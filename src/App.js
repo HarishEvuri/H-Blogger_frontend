@@ -1,29 +1,23 @@
-import React, { useState } from "react";
-import { EditorState } from "draft-js";
-import { convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
-import "./App.css";
-import MyEditor from "./components/MyEditor";
+import React from "react";
+import { Container } from "@mui/material";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
 
 const App = () => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
-
   return (
-    <div className="App">
-      <MyEditor editorState={editorState} handleEditorState={setEditorState} />
-
-      <div
-        className="preview"
-        dangerouslySetInnerHTML={{
-          __html: draftToHtml(convertToRaw(editorState.getCurrentContent())),
-        }}
-      />
-
-      <div>{JSON.stringify(convertToRaw(editorState.getCurrentContent()))}</div>
-    </div>
+    <BrowserRouter>
+      <Navbar />
+      <Switch>
+        <Route
+          path="/"
+          exact
+          component={() => <Redirect to="/blogs?page=1" />}
+        />
+        <Route path="/blogs" exact component={Home} />
+      </Switch>
+    </BrowserRouter>
   );
 };
 
