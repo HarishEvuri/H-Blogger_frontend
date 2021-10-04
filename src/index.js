@@ -14,20 +14,21 @@ const store = createStore(reducers, {}, compose(applyMiddleware(thunk)));
 const theme = createTheme({
   palette: {
     primary: {
-      light: "#606771",
-      main: "#39424e",
-      dark: "#272e36",
-      contrastText: "#fff",
+      main: "#fff",
+      contrastText: "#39424e",
     },
     secondary: {
-      light: "#48ba6f",
-      main: "#1ba94c",
-      dark: "#127635",
+      main: "#1a8917",
+      light: "#47a045",
+      contrastText: "#fff",
+    },
+    teritiary: {
+      main: "#39424e",
       contrastText: "#fff",
     },
     neutral: {
-      main: "#fff",
-      contrastText: "#39424e",
+      main: "#39424e",
+      contrastText: "#fff",
     },
   },
 });

@@ -4,11 +4,13 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
+import Progress from "./components/Progress";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Navbar />
+      <Progress />
       <Switch>
         <Route
           path="/"

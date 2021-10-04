@@ -12,6 +12,8 @@ import {
   Container,
   Avatar,
   Button,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -20,17 +22,22 @@ import DraftsIcon from "@mui/icons-material/Drafts";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CreateIcon from "@mui/icons-material/Create";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../api";
 import { auth, signout } from "../actions/auth";
 
+import Signup from "./Signup";
+import Signin from "./Signin";
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  borderColor: alpha(theme.palette.common.black, 0.15),
+  backgroundColor: alpha(theme.palette.common.black, 0.05),
   "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: alpha(theme.palette.common.black, 0.1),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
@@ -66,11 +73,22 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
-  const [mobileAnchorEl, setMobileAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileAnchorEl, setMobileAnchorEl] = useState(null);
+  const [openSignin, setOpenSignin] = useState(false);
+  const [openSignup, setOpenSignup] = useState(false);
+
   const dispatch = useDispatch();
   const { authData } = useSelector((state) => state.auth);
 
+  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileAnchorEl);
+
+  useEffect(async () => {
+    const { data } = await getUserInfo();
+
+    if (!data.message) dispatch(auth(data));
+  }, [dispatch]);
 
   const handleMobileMenuClose = () => {
     setMobileAnchorEl(null);
@@ -80,13 +98,83 @@ export default function Navbar() {
     setMobileAnchorEl(event.currentTarget);
   };
 
-  useEffect(async () => {
-    const { data } = await getUserInfo();
-    dispatch(auth(data));
-  }, [dispatch]);
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleOpenSignin = () => {
+    setOpenSignin(true);
+  };
+
+  const handleCloseSignin = () => {
+    setOpenSignin(false);
+  };
+
+  const handleOpenSignup = () => {
+    setOpenSignup(true);
+  };
+
+  const handleCloseSignup = () => {
+    setOpenSignup(false);
+  };
+
+  const handleSignout = () => {
+    dispatch(signout());
+    handleProfileMenuClose();
+  };
+
+  const menuId = "primary-search-account-menu";
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMenuOpen}
+      onClose={handleProfileMenuClose}
+    >
+      <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          color="inherit"
+        >
+          <Avatar
+            src="https://miro.medium.com/fit/c/164/164/0*JQ9YNUD02tlx_C1y"
+            sx={{
+              width: 28,
+              height: 28,
+              backgroundColor: "secondary",
+              color: "white",
+            }}
+            variant="rounded"
+          >
+            HE
+          </Avatar>
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+      <MenuItem onClick={handleSignout}>
+        <IconButton size="large" color="inherit">
+          <LogoutIcon />
+        </IconButton>
+        <p>SignOut</p>
+      </MenuItem>
+    </Menu>
+  );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
-
   const renderMobileMenu = authData ? (
     <Menu
       anchorEl={mobileAnchorEl}
@@ -103,6 +191,12 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <MenuItem>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <CreateIcon />
+        </IconButton>
+        <p>Create Blog</p>
+      </MenuItem>
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <BookmarksIcon />
@@ -126,14 +220,15 @@ export default function Navbar() {
           color="inherit"
         >
           <Avatar
-            alt="Harish"
-            src="https://www.srmist.edu.in/sites/default/files/images/rank-7.jpg"
+            alt="Harish Evuri"
+            src=""
             sx={{
-              width: 24,
-              height: 24,
+              width: 28,
+              height: 28,
               backgroundColor: "secondary",
               color: "white",
             }}
+            variant="rounded"
           />
         </IconButton>
         <p>Profile</p>
@@ -146,7 +241,7 @@ export default function Navbar() {
         >
           <LogoutIcon />
         </IconButton>
-        <p>SignOut</p>
+        <p>Sign Out</p>
       </MenuItem>
     </Menu>
   ) : (
@@ -210,6 +305,13 @@ export default function Navbar() {
                   aria-label="show 4 new mails"
                   color="inherit"
                 >
+                  <CreateIcon />
+                </IconButton>
+                <IconButton
+                  size="large"
+                  aria-label="show 4 new mails"
+                  color="inherit"
+                >
                   <BookmarksIcon />
                 </IconButton>
                 <IconButton
@@ -223,42 +325,43 @@ export default function Navbar() {
                   size="large"
                   aria-label="account of current user"
                   color="inherit"
+                  onClick={handleProfileMenuOpen}
                 >
                   <Avatar
-                    alt="Harish"
-                    src="https://www.srmist.edu.in/sites/default/files/images/rank-7.jpg"
+                    src={authData.image}
                     sx={{
-                      width: 24,
-                      height: 24,
-                      bgcolor: "inherit",
-                      color: "white",
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "white",
+                      color: "black",
                     }}
-                  />
+                    variant="rounded"
+                  >
+                    {`${authData.firstName.charAt(0)}${authData.lastName.charAt(
+                      0
+                    )}`}
+                  </Avatar>
                 </IconButton>
-                <Button
-                  size="small"
-                  startIcon={<LogoutIcon />}
-                  color="neutral"
-                  sx={{ padding: 1 }}
-                >
-                  SignOut
-                </Button>
               </Box>
             ) : (
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
                 <Button
                   size="small"
                   startIcon={<LoginIcon />}
-                  color="neutral"
+                  color="secondary"
+                  variant="contained"
                   sx={{ marginLeft: 1, padding: 1 }}
+                  onClick={handleOpenSignin}
                 >
                   SignIn
                 </Button>
                 <Button
                   size="small"
                   startIcon={<PersonAddIcon />}
-                  color="neutral"
-                  sx={{ marginLeft: 1, padding: 1 }}
+                  color="secondary"
+                  variant="contained"
+                  sx={{ marginLeft: 2, padding: 1 }}
+                  onClick={handleOpenSignup}
                 >
                   SignUp
                 </Button>
@@ -279,6 +382,31 @@ export default function Navbar() {
         </Container>
       </AppBar>
       {renderMobileMenu}
+      {renderMenu}
+      <Dialog
+        open={openSignup}
+        onClose={handleCloseSignup}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContent>
+          <Signup
+            openSignin={handleOpenSignin}
+            closeSignup={handleCloseSignup}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openSignin}
+        onClose={handleCloseSignin}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContent>
+          <Signin
+            openSignup={handleOpenSignup}
+            closeSignin={handleCloseSignin}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
