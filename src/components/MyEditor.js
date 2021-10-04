@@ -5,11 +5,10 @@ import "./MyEditor.css";
 
 const MyEditor = ({ editorState, handleEditorState }) => {
   return (
-    <div className="App">
+    <div>
       <Editor
         editorState={editorState}
         onEditorStateChange={(e) => handleEditorState(e)}
-        wrapperClassName="wrapper-class"
         editorClassName="editor-class"
         toolbarClassName="toolbar-class"
         toolbar={{
@@ -50,6 +49,13 @@ const MyEditor = ({ editorState, handleEditorState }) => {
               "rgb(124,112,107)",
               "rgb(209,213,216)",
             ],
+          },
+          image: {
+            alignmentEnabled: false,
+            defaultSize: {
+              height: "auto",
+              width: "800",
+            },
           },
         }}
       />

@@ -7,8 +7,6 @@ import {
   IconButton,
   Typography,
   InputBase,
-  MenuItem,
-  Menu,
   Container,
   Avatar,
   Button,
@@ -19,17 +17,20 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import DraftsIcon from "@mui/icons-material/Drafts";
-import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CreateIcon from "@mui/icons-material/Create";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { getUserInfo } from "../api";
-import { auth, signout } from "../actions/auth";
+import { auth } from "../actions/auth";
 
 import Signup from "./Signup";
 import Signin from "./Signin";
+import MobileMenu from "./MobileMenu";
+import Progress from "./Progress";
+import AccountMenu from "./AccountMenu";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -78,21 +79,15 @@ export default function Navbar() {
   const [openSignin, setOpenSignin] = useState(false);
   const [openSignup, setOpenSignup] = useState(false);
 
+  const history = useHistory();
   const dispatch = useDispatch();
   const { authData } = useSelector((state) => state.auth);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileAnchorEl);
 
   useEffect(async () => {
     const { data } = await getUserInfo();
 
     if (!data.message) dispatch(auth(data));
   }, [dispatch]);
-
-  const handleMobileMenuClose = () => {
-    setMobileAnchorEl(null);
-  };
 
   const handleMobileMenuOpen = (event) => {
     setMobileAnchorEl(event.currentTarget);
@@ -122,166 +117,13 @@ export default function Navbar() {
     setOpenSignup(false);
   };
 
-  const handleSignout = () => {
-    dispatch(signout());
-    handleProfileMenuClose();
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleProfileMenuClose}
-    >
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          color="inherit"
-        >
-          <Avatar
-            src="https://miro.medium.com/fit/c/164/164/0*JQ9YNUD02tlx_C1y"
-            sx={{
-              width: 28,
-              height: 28,
-              backgroundColor: "secondary",
-              color: "white",
-            }}
-            variant="rounded"
-          >
-            HE
-          </Avatar>
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-      <MenuItem onClick={handleSignout}>
-        <IconButton size="large" color="inherit">
-          <LogoutIcon />
-        </IconButton>
-        <p>SignOut</p>
-      </MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = authData ? (
-    <Menu
-      anchorEl={mobileAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <CreateIcon />
-        </IconButton>
-        <p>Create Blog</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <BookmarksIcon />
-        </IconButton>
-        <p>Bookmarks</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <DraftsIcon />
-        </IconButton>
-        <p>Drafts</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          color="inherit"
-        >
-          <Avatar
-            alt="Harish Evuri"
-            src=""
-            sx={{
-              width: 28,
-              height: 28,
-              backgroundColor: "secondary",
-              color: "white",
-            }}
-            variant="rounded"
-          />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <LogoutIcon />
-        </IconButton>
-        <p>Sign Out</p>
-      </MenuItem>
-    </Menu>
-  ) : (
-    <Menu
-      anchorEl={mobileAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" color="inherit">
-          <LoginIcon />
-        </IconButton>
-        <p>SignIn</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" color="inherit">
-          <PersonAddIcon />
-        </IconButton>
-        <p>SignUp</p>
-      </MenuItem>
-    </Menu>
-  );
-
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Container maxWidth="lg">
           <Toolbar>
             <Typography
-              variant="h6"
+              variant="h5"
               noWrap
               component="div"
               sx={{ display: { xs: "none", sm: "block" } }}
@@ -304,26 +146,18 @@ export default function Navbar() {
                   size="large"
                   aria-label="show 4 new mails"
                   color="inherit"
+                  onClick={() => history.push("/blogs/create")}
                 >
                   <CreateIcon />
                 </IconButton>
-                <IconButton
-                  size="large"
-                  aria-label="show 4 new mails"
-                  color="inherit"
-                >
+                <IconButton size="large" color="inherit">
                   <BookmarksIcon />
                 </IconButton>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
+                <IconButton size="large" color="inherit">
                   <DraftsIcon />
                 </IconButton>
                 <IconButton
                   size="large"
-                  aria-label="account of current user"
                   color="inherit"
                   onClick={handleProfileMenuOpen}
                 >
@@ -332,7 +166,7 @@ export default function Navbar() {
                     sx={{
                       width: 28,
                       height: 28,
-                      backgroundColor: "white",
+                      backgroundColor: "inherit",
                       color: "black",
                     }}
                     variant="rounded"
@@ -371,7 +205,6 @@ export default function Navbar() {
               <IconButton
                 size="large"
                 aria-label="show more"
-                aria-controls={mobileMenuId}
                 onClick={handleMobileMenuOpen}
                 color="inherit"
               >
@@ -380,9 +213,13 @@ export default function Navbar() {
             </Box>
           </Toolbar>
         </Container>
+        <Progress />
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
+      <MobileMenu
+        mobileAnchorEl={mobileAnchorEl}
+        setMobileAnchorEl={setMobileAnchorEl}
+      />
+      <AccountMenu anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
       <Dialog
         open={openSignup}
         onClose={handleCloseSignup}
