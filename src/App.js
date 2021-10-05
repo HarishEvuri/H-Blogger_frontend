@@ -4,7 +4,8 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import CreateBlog from "./components/CreateBlog";
-import { Container, Box } from "@mui/material";
+import DetailedBlog from "./components/DetailedBlog";
+import { Container } from "@mui/material";
 
 const App = () => {
   return (
@@ -18,7 +19,8 @@ const App = () => {
             component={() => <Redirect to="/blogs?page=1" />}
           />
           <Route path="/blogs" exact component={Home} />
-          <Route path="/blogs/create" component={CreateBlog} />
+          <Route path="/blogs/create" exact component={CreateBlog} />
+          <Route path="/blogs/:id" component={DetailedBlog} />
         </Switch>
       </Container>
     </BrowserRouter>

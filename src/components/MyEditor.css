@@ -1,8 +1,27 @@
 .editor-class {
+  position: relative;
   background-color: white;
   padding: 1rem;
   border: 1px solid #ccc;
+  z-index: 0;
 }
 .toolbar-class {
   border: 1px solid #ccc;
+  position: sticky;
+  top: 70px;
+  z-index: 1;
+}
+.view img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.view p {
+  min-height: 20px;
+}
+.view li {
+  margin-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }

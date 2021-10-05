@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Container, TextField } from "@mui/material";
 import MyEditor from "./MyEditor";
 import { convertToRaw, EditorState } from "draft-js";
+import draftToHtml from "draftjs-to-html";
 import { createBlog } from "../api";
 
 const CreateBlog = () => {
@@ -13,7 +14,7 @@ const CreateBlog = () => {
   const [thumbnail, setThumbnail] = useState();
 
   const handleSubmit = async () => {
-    const body = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+    const body = draftToHtml(convertToRaw(editorState.getCurrentContent()));
 
     const { data } = await createBlog({ title, description, thumbnail, body });
     console.log(data);
@@ -57,6 +58,11 @@ const CreateBlog = () => {
           thumbnail ||
           "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png"
         }
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src =
+            "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png";
+        }}
         width="100%"
       />
       <TextField
